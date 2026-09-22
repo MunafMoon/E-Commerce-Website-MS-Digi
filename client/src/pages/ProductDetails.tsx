@@ -1,0 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { api, img, money, Product } from "../lib/api";
+export function ProductDetails(){ const {slug}=useParams(); const {data:p,isLoading}=useQuery({queryKey:["product",slug],queryFn:()=>api<Product>(`/products/${slug}`),enabled:!!slug}); if(isLoading) return <main className="p-10">Loading...</main>; if(!p) return null; return <main className="mx-auto grid max-w-7xl gap-10 px-4 py-10 md:grid-cols-2"><img src={img(p.images?.[0]?.url)} className="aspect-square w-full rounded-lg object-cover"/><section><p className="text-sm text-gold">{p.brand?.name}</p><h1 className="mt-2 text-4xl font-semibold">{p.name}</h1><p className="mt-4 text-2xl font-semibold">{money(p.salePrice ?? p.regularPrice)}</p><p className="mt-6 text-stone-600">Stock: {p.stock}</p><button className="mt-8 w-full rounded-full bg-ink px-6 py-3 font-medium text-white">Add to cart</button></section></main> }

@@ -1,0 +1,128 @@
+# How to Start This Project
+
+## 1. Open the project folder
+
+```powershell
+cd "C:\Users\APPLE\Documents\Project\E-Commerce website"
+```
+
+## 2. Create environment files
+
+```powershell
+Copy-Item .env.example .env
+Copy-Item .env server\.env -Force
+```
+
+Open `.env` and `server/.env`, then set these values:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE"
+JWT_SECRET="change-this-to-a-long-secret"
+JWT_REFRESH_SECRET="change-this-to-another-long-secret"
+ADMIN_SEED_PASSWORD="your-secure-admin-password"
+PORT=4000
+CLIENT_URL="http://localhost:5173"
+UPLOAD_DIRECTORY="uploads"
+```
+
+For a simple hosted database, use Neon, Supabase, Railway, Render, or Aiven. If the provider gives an SSL connection string, use it exactly, usually with `?sslmode=require`.
+
+## 3. Install dependencies
+
+```powershell
+npm install
+```
+
+## 4. Prepare the database
+
+Your PostgreSQL database must already exist and be reachable from `DATABASE_URL`.
+
+Generate Prisma client:
+
+```powershell
+npx prisma generate --schema server/prisma/schema.prisma
+```
+
+Run migrations:
+
+```powershell
+npm run prisma:migrate --workspace server
+```
+
+Seed demo data:
+
+```powershell
+npm run seed
+```
+
+Seeded admin account:
+
+```text
+Email: admin@example.com
+Password: the ADMIN_SEED_PASSWORD value from your .env file
+```
+
+## 5. Start both frontend and backend
+
+```powershell
+npm run dev
+```
+
+Then open:
+
+```text
+Customer website: http://localhost:5173
+Admin dashboard:  http://localhost:5173/admin
+Backend API:       http://localhost:4000
+API docs:          http://localhost:4000/api/docs
+```
+
+## Start Server Only
+
+```powershell
+npm run dev --workspace server
+```
+
+## Start Client Only
+
+```powershell
+npm run dev --workspace client
+```
+
+## Useful Checks
+
+TypeScript check:
+
+```powershell
+npm run typecheck
+```
+
+Production build:
+
+```powershell
+npm run build
+```
+
+Prisma Studio:
+
+```powershell
+npx prisma studio --schema server/prisma/schema.prisma
+```
+
+## Common Windows Note
+
+If PowerShell blocks `npm`, use `npm` instead:
+
+```powershell
+npm install
+npm run dev
+```
+
+## Prisma DATABASE_URL Fix
+
+If Prisma says `DATABASE_URL` is missing, copy the root env file into the server folder:
+
+```powershell
+Copy-Item .env server\.env -Force
+```
+

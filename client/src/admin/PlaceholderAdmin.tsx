@@ -1,0 +1,1 @@
+export function PlaceholderAdmin({title}:{title:string}){ return <div><h1 className="text-3xl font-semibold">{title}</h1><div className="mt-6 rounded-lg bg-white p-6 shadow-soft"><p className="text-stone-600">This module is routed and ready for CRUD tables, filters, bulk actions, and forms using the shared admin API conventions.</p></div></div> }

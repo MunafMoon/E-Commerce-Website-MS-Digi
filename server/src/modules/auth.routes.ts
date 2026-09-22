@@ -1,0 +1,14 @@
+import { Router } from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { z } from "zod";
+import { prisma } from "../lib/prisma.js";
+import { ApiError, asyncHandler, created, ok } from "../lib/http.js";
+import { env } from "../config/env.js";
+import { requireAuth, signAccessToken, signRefreshToken } from "../middleware/auth.js";
+export const authRoutes = Router();
+const credentials = z.object({ email: z.string().email(), password: z.string().min(8) });
+authRoutes.post("/register", asyncHandler(async (req, res) => { const body = credentials.extend({ name: z.string().min(2), phone: z.string().optional() }).parse(req.body); const user = await prisma.user.create({ data: { name: body.name, email: body.email, phone: body.phone, passwordHash: await bcrypt.hash(body.password, 12) } }); created(res, { user: { id: user.id, name: user.name, email: user.email, role: user.role } }); }));
+authRoutes.post("/login", asyncHandler(async (req, res) => { const body = credentials.parse(req.body); const user = await prisma.user.findUnique({ where: { email: body.email } }); if (!user || !(await bcrypt.compare(body.password, user.passwordHash))) throw new ApiError(401, "Invalid email or password"); const payload = { id: user.id, role: user.role, email: user.email }; const refreshToken = signRefreshToken(payload); await prisma.refreshToken.create({ data: { userId: user.id, tokenHash: await bcrypt.hash(refreshToken, 10), expiresAt: new Date(Date.now() + 30 * 864e5) } }); ok(res, { user: payload, accessToken: signAccessToken(payload), refreshToken }); }));
+authRoutes.post("/refresh", asyncHandler(async (req, res) => { const { refreshToken } = z.object({ refreshToken: z.string() }).parse(req.body); const payload = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET) as { id: string; role: any; email: string }; ok(res, { accessToken: signAccessToken({ id: payload.id, role: payload.role, email: payload.email }) }); }));
+authRoutes.post("/logout", requireAuth, asyncHandler(async (_req, res) => ok(res, true)));

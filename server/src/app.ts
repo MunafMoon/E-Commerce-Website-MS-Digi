@@ -1,0 +1,17 @@
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import compression from "compression";
+import rateLimit from "express-rate-limit";
+import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";
+import { env } from "./config/env.js";
+import { errorHandler } from "./lib/http.js";
+import { authRoutes } from "./modules/auth.routes.js";
+import { adminCatalogRoutes, catalogRoutes } from "./modules/catalog.routes.js";
+import { adminCmsRoutes, cmsRoutes } from "./modules/cms.routes.js";
+import { adminCommerceRoutes, commerceRoutes } from "./modules/commerce.routes.js";
+import { uploadRoutes } from "./modules/upload.routes.js";
+import { openApiSpec } from "./openapi.js";
+export const app = express();
+app.use(helmet({ crossOriginResourcePolicy: false })); app.use(cors({ origin: env.CLIENT_URL, credentials: true })); app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300 })); app.use(compression()); app.use(express.json({ limit: "2mb" })); app.use(morgan("dev")); app.use("/uploads", express.static(env.UPLOAD_DIRECTORY)); app.get("/health", (_req, res) => res.json({ ok: true })); app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiSpec)); app.use("/api/auth", authRoutes); app.use("/api", catalogRoutes, cmsRoutes, commerceRoutes); app.use("/api/admin", adminCatalogRoutes, adminCmsRoutes, adminCommerceRoutes); app.use("/api/admin/uploads", uploadRoutes); app.use(errorHandler);

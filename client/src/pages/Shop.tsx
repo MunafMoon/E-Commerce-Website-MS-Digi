@@ -1,0 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
+import { api, Product } from "../lib/api";
+import { ProductCard } from "../components/ProductCard";
+export function Shop(){ const {data=[],isLoading}=useQuery({queryKey:["products"],queryFn:()=>api<Product[]>("/products?limit=24")}); return <main className="mx-auto max-w-7xl px-4 py-10"><div className="flex flex-col gap-2 border-b pb-8"><p className="text-sm uppercase tracking-[.2em] text-gold">Shop</p><h1 className="text-4xl font-semibold">All products</h1><p className="text-stone-600">Server-side search, sorting, categories, brand and price filters are exposed through the API.</p></div>{isLoading?<p className="py-10">Loading products...</p>:<div className="grid gap-6 py-8 sm:grid-cols-2 lg:grid-cols-4">{data.map(p=><ProductCard key={p.id} p={p}/>)}</div>}</main> }

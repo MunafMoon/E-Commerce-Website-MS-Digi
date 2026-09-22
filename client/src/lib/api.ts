@@ -1,0 +1,6 @@
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api";
+export type Product = { id:string; name:string; slug:string; regularPrice:string; salePrice?:string; stock:number; featured:boolean; bestSeller:boolean; newArrival:boolean; images:{url:string; isPrimary:boolean}[]; category?:{name:string; slug:string}; brand?:{name:string} };
+export type Section = { id:string; type:string; title:string; subtitle?:string; description?:string; image?:string; buttonLabel?:string; buttonUrl?:string; displayOrder:number; active:boolean; data?: any };
+export async function api<T>(path:string, init:RequestInit = {}): Promise<T> { const token = localStorage.getItem("accessToken"); const res = await fetch(`${API_URL}${path}`, { ...init, headers: { "Content-Type":"application/json", ...(token ? { Authorization:`Bearer ${token}` } : {}), ...init.headers } }); const json = await res.json(); if (!res.ok || !json.success) throw new Error(json.message ?? "Request failed"); return json.data; }
+export const img = (url?: string) => !url ? "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop" : url.startsWith("http") ? url : `${API_URL.replace('/api','')}${url}`;
+export const money = (value: string | number) => `?${Number(value).toLocaleString("en-IN")}`;

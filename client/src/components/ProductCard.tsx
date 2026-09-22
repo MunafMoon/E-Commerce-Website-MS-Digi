@@ -1,0 +1,3 @@
+import { Link } from "react-router-dom";
+import { Product, img, money } from "../lib/api";
+export function ProductCard({p}:{p:Product}){ const primary=p.images?.find(i=>i.isPrimary)?.url ?? p.images?.[0]?.url; return <Link to={`/product/${p.slug}`} className="group block"><div className="aspect-[4/5] overflow-hidden rounded-lg bg-stone-100"><img src={img(primary)} className="h-full w-full object-cover transition duration-500 group-hover:scale-105"/></div><div className="mt-3 flex items-start justify-between gap-3"><div><p className="text-sm text-stone-500">{p.category?.name}</p><h3 className="font-medium text-ink">{p.name}</h3></div><p className="font-semibold text-ink">{money(p.salePrice ?? p.regularPrice)}</p></div></Link> }
