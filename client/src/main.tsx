@@ -6,4 +6,5 @@ import { Toaster } from "sonner";
 import App from "./App";
 import "./styles.css";
 const queryClient = new QueryClient();
-ReactDOM.createRoot(document.getElementById("root")!).render(<React.StrictMode><QueryClientProvider client={queryClient}><BrowserRouter><App/><Toaster richColors position="top-right"/></BrowserRouter></QueryClientProvider></React.StrictMode>);
+ReactDOM.createRoot(document.getElementById("root")!).render(<React.StrictMode><QueryClientProvider client={queryClient}><BrowserRouter basename="/E-Commerce-Website-MS-Digi"><App/><Toaster richColors position="top-right"/></BrowserRouter></QueryClientProvider></React.StrictMode>);
+
